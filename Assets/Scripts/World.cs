@@ -8,11 +8,14 @@ public class World : MonoBehaviour {
     public GameObject player;
     public Material material;
     public static int chunkSize = 16;
-    public static int radius = 1;
+    public static int radius = 2;
     public static ConcurrentDictionary<string, Chunk> chunkDict;
     public static List<string> toRemove = new List<string>();
     private Vector3 lastBuildPos;
     private bool drawing;
+
+    private float removeTimer = 10f;
+    private float timeToRemove = 10f;
 
     // Start is called before the first frame update
     void Start() {
@@ -38,8 +41,14 @@ public class World : MonoBehaviour {
             Building(WhichChunk(lastBuildPos), radius);
             Drawing();
         }
+
         if (!drawing)
             Drawing();
+
+        if (Time.time >= timeToRemove) {
+            timeToRemove = Time.time + removeTimer;
+            Removing();
+        }
     }
 
     public static string CreateChunkName(Vector3 v) {
@@ -57,15 +66,22 @@ public class World : MonoBehaviour {
     }
 
     IEnumerator RemoveChunks() {
+        foreach (KeyValuePair<string, Chunk> c in chunkDict) {
+            if (c.Value.goChunk && Vector3.Distance(player.transform.position, c.Value.goChunk.transform.position) > chunkSize * radius && !toRemove.Contains(c.Key))
+                toRemove.Add(c.Key);
+        }
+
         for (int i = 0; i < toRemove.Count; i++) {
             string name = toRemove[i];
             Chunk c;
             if (chunkDict.TryGetValue(name, out c)) {
                 Destroy(c.goChunk);
                 chunkDict.TryRemove(name, out c);
-                yield return null;
             }
         }
+
+        toRemove.Clear();
+        yield return null;
     }
 
     IEnumerator DrawChunks() {
@@ -75,15 +91,16 @@ public class World : MonoBehaviour {
                 c.Value.DrawChunk();
                 yield return null;
             }
-            if (c.Value.goChunk && Vector3.Distance(player.transform.position, c.Value.goChunk.transform.position) > chunkSize * radius)
-                toRemove.Add(c.Key);
         }
-        StartCoroutine(RemoveChunks());
         drawing = false;
     }
 
     void Drawing() {
         StartCoroutine(DrawChunks());
+    }
+
+    void Removing() {
+        StartCoroutine(RemoveChunks());
     }
 
     Vector3 WhichChunk(Vector3 pos) {

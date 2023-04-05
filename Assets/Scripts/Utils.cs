@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Utils {
 
-    static float smooth = 0.002f;
+    static float smooth = 0.001f;
     static float smooth3D = 10 * smooth;
     static int maxHeight = 150;
     static int octaves = 6;
@@ -49,5 +49,16 @@ public class Utils {
         return total / maxValue;
     }
 
+    public static bool IsVisible(Camera cam, GameObject target) {
+        var planes = GeometryUtility.CalculateFrustumPlanes(cam);
+        var point = target.transform.position;
+
+        foreach (var plane in planes) {
+            if (plane.GetDistanceToPoint(point) < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 
 }

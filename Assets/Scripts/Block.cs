@@ -161,7 +161,7 @@ public class Block {
 
         try {
             return chunkData[x, y, z].isSolid;
-        } catch (System.IndexOutOfRangeException ex) { }
+        } catch (System.IndexOutOfRangeException ex) { Debug.LogWarning(ex); }
         return false;
     }
 
