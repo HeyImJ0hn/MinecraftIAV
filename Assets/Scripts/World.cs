@@ -17,7 +17,6 @@ public class World : MonoBehaviour {
     private float removeTimer = 10f;
     private float timeToRemove = 10f;
 
-    // Start is called before the first frame update
     void Start() {
         player.SetActive(false);
         chunkDict = new ConcurrentDictionary<string, Chunk>();
@@ -33,7 +32,6 @@ public class World : MonoBehaviour {
         player.SetActive(true);
     }
 
-    // Update is called once per frame
     void Update() {
         Vector3 movement = player.transform.position - lastBuildPos;
         if (movement.magnitude < chunkSize) {
@@ -48,6 +46,7 @@ public class World : MonoBehaviour {
         if (Time.time >= timeToRemove) {
             timeToRemove = Time.time + removeTimer;
             Removing();
+            RegrowGrass();
         }
     }
 
@@ -67,7 +66,9 @@ public class World : MonoBehaviour {
 
     IEnumerator RemoveChunks() {
         foreach (KeyValuePair<string, Chunk> c in chunkDict) {
-            if (c.Value.goChunk && Vector3.Distance(player.transform.position, c.Value.goChunk.transform.position) > chunkSize * radius && !toRemove.Contains(c.Key))
+            Vector3 pPos = new Vector3(player.transform.position.x, 0, player.transform.position.z);
+            Vector3 cPos = new Vector3(c.Value.goChunk.transform.position.x, 0, c.Value.goChunk.transform.position.z);
+            if (c.Value.goChunk && Vector3.Distance(pPos, cPos) > chunkSize * radius + chunkSize && !toRemove.Contains(c.Key))
                 toRemove.Add(c.Key);
         }
 
@@ -78,19 +79,18 @@ public class World : MonoBehaviour {
                 Destroy(c.goChunk);
                 chunkDict.TryRemove(name, out c);
             }
+            yield return null;
         }
 
         toRemove.Clear();
-        yield return null;
     }
 
     IEnumerator DrawChunks() {
         drawing = true;
         foreach (KeyValuePair<string, Chunk> c in chunkDict) {
-            if (c.Value.goChunk && c.Value.status == Chunk.ChunkStatus.DRAW) {
+            if (c.Value.goChunk && c.Value.status == Chunk.ChunkStatus.DRAW)
                 c.Value.DrawChunk();
-                yield return null;
-            }
+            yield return null;
         }
         drawing = false;
     }
@@ -137,4 +137,20 @@ public class World : MonoBehaviour {
         StartCoroutine(BuildRecursiveWorld(chunkPos, rad));
     }
 
+    public static void RebuildChunk(Chunk c) {
+        DestroyImmediate(c.goChunk.GetComponent<MeshFilter>());
+        DestroyImmediate(c.goChunk.GetComponent<MeshRenderer>());
+        DestroyImmediate(c.goChunk.GetComponent<MeshCollider>());
+        c.DrawChunk();
+    }
+
+    public void RegrowGrass() {
+        foreach (KeyValuePair<string, Chunk> c in chunkDict) {
+            c.Value.RegrowGrass();
+            if (c.Value.regrow) {
+                RebuildChunk(c.Value);
+                c.Value.regrow = false;
+            }
+        }
+    }
 }

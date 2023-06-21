@@ -9,7 +9,7 @@ public class Utils {
     static int maxHeight = 150;
     static int octaves = 6;
     static float persistence = 0.7f;
-    static float offset = 32000;
+    static float offset = Random.Range(0f, 32000f);
 
     public static int GenerateHeight(float x, float z) {
         return (int)Map(0, maxHeight, 0, 1, fBM(x * smooth, z * smooth, octaves, persistence));

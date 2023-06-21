@@ -6,42 +6,64 @@ public class Block {
 
     enum Cubeside { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK }
 
-    public enum BlockType { GRASS, DIRT, STONE, COBBLESTONE, AIR };
-
-    private BlockType bType;
+    private BlockData.Type bType;
     private Chunk owner;
-    private Material material;
     private Vector3 pos;
     private bool isSolid;
 
     static Vector2 GrassSide_LBC = new Vector2(3f, 15f) / 16;
-    static Vector2 GrassTop_LBC = new Vector2(8f, 13f) / 16;
+    static Vector2 GrassTop_LBC = new Vector2(13f, 5f) / 16;
     static Vector2 Dirt_LBC = new Vector2(2f, 15f) / 16;
     static Vector2 Stone_LBC = new Vector2(1f, 15f) / 16;
     static Vector2 Cobblestone_LBC = new Vector2(0f, 14f) / 16;
+    static Vector2 LogTop_LBC = new Vector2(5f, 14f) / 16;
+    static Vector2 LogSide_LBC = new Vector2(4f, 14f) / 16;
+    static Vector2 DiamondOre_LBC = new Vector2(2f, 12f) / 16;
+    static Vector2 Bedrock_LBC = new Vector2(1f, 14f) / 16;
+    static Vector2 Leaves_LBC = new Vector2(5f, 12f) / 16;
 
     Vector2[,] blockUVs = {
-        /* GRASS TOP */ {GrassTop_LBC, GrassTop_LBC + new Vector2(1f, 0f)/16f,
-                        GrassTop_LBC + new Vector2(0f, 1f)/16, GrassTop_LBC + new Vector2(1f, 1f)/16},
         /* GRASS SIDE */ {GrassSide_LBC, GrassSide_LBC + new Vector2(1f, 0f)/16f,
                         GrassSide_LBC + new Vector2(0f, 1f)/16, GrassSide_LBC + new Vector2(1f, 1f)/16},
+        /* LOG SIDE */ {LogSide_LBC, LogSide_LBC + new Vector2(1f, 0f)/16f,
+                        LogSide_LBC + new Vector2(0f, 1f)/16, LogSide_LBC + new Vector2(1f, 1f)/16},
         /* DIRT */ {Dirt_LBC, Dirt_LBC + new Vector2(1f, 0f)/16f,
                         Dirt_LBC + new Vector2(0f, 1f)/16, Dirt_LBC + new Vector2(1f, 1f)/16},
         /* STONE */ {Stone_LBC, Stone_LBC + new Vector2(1f, 0f)/16f,
                         Stone_LBC + new Vector2(0f, 1f)/16, Stone_LBC + new Vector2(1f, 1f)/16},
         /* COBBLESTONE */ {Cobblestone_LBC, Cobblestone_LBC + new Vector2(1f, 0f)/16f,
                         Cobblestone_LBC + new Vector2(0f, 1f)/16, Cobblestone_LBC + new Vector2(1f, 1f)/16},
+        /* BEDROCK */ {Bedrock_LBC, Bedrock_LBC + new Vector2(1f, 0f)/16f,
+                        Bedrock_LBC + new Vector2(0f, 1f)/16, Bedrock_LBC + new Vector2(1f, 1f)/16},
+        /* DIAMOND_ORE */ {DiamondOre_LBC, DiamondOre_LBC + new Vector2(1f, 0f)/16f,
+                        DiamondOre_LBC + new Vector2(0f, 1f)/16, DiamondOre_LBC + new Vector2(1f, 1f)/16},
+        /* LEAVES */ {Leaves_LBC, Leaves_LBC + new Vector2(1f, 0f)/16f,
+                        Leaves_LBC + new Vector2(0f, 1f)/16, Leaves_LBC + new Vector2(1f, 1f)/16},
     };
 
-    public Block(BlockType bType, Vector3 pos, Chunk owner, Material material) {
-        this.bType = bType;
+    Vector2[,] blockUVsTop = {
+        /* GRASS TOP */ {GrassTop_LBC, GrassTop_LBC + new Vector2(1f, 0f)/16f,
+                        GrassTop_LBC + new Vector2(0f, 1f)/16, GrassTop_LBC + new Vector2(1f, 1f)/16},
+        /* LOG TOP */ {LogTop_LBC, LogTop_LBC + new Vector2(1f, 0f)/16f,
+                        LogTop_LBC + new Vector2(0f, 1f)/16, LogTop_LBC + new Vector2(1f, 1f)/16},
+    };
+
+    public Block(BlockData.Type bType, Vector3 pos, Chunk owner) {
         this.pos = pos;
         this.owner = owner;
-        this.material = material;
-        if (bType == BlockType.AIR)
+        SetType(bType);
+    }
+
+    public void SetType(BlockData.Type bType) {
+        this.bType = bType;
+        if (bType == BlockData.Type.AIR)
             isSolid = false;
         else
             isSolid = true;
+    }
+
+    public BlockData.Type GetBlockType() {
+        return bType;
     }
 
     void CreateQuad(Cubeside side) {
@@ -61,21 +83,26 @@ public class Block {
         Vector2 uv10 = new Vector2(1, 0);
         Vector2 uv11 = new Vector2(1, 1);
 
-        if (bType == BlockType.GRASS && side == Cubeside.TOP) {
-            uv00 = blockUVs[0, 0];
-            uv10 = blockUVs[0, 1];
-            uv01 = blockUVs[0, 2];
-            uv11 = blockUVs[0, 3];
-        } else if (bType == BlockType.GRASS && side == Cubeside.TOP) {
+        if ((bType == BlockData.Type.GRASS || bType == BlockData.Type.LOG) && side == Cubeside.TOP) {
+            uv00 = blockUVsTop[bType == BlockData.Type.GRASS ? 0 : 1, 0];
+            uv10 = blockUVsTop[bType == BlockData.Type.GRASS ? 0 : 1, 1];
+            uv01 = blockUVsTop[bType == BlockData.Type.GRASS ? 0 : 1, 2];
+            uv11 = blockUVsTop[bType == BlockData.Type.GRASS ? 0 : 1, 3];
+        } else if (bType == BlockData.Type.GRASS && side == Cubeside.BOTTOM) {
             uv00 = blockUVs[2, 0];
             uv10 = blockUVs[2, 1];
             uv01 = blockUVs[2, 2];
             uv11 = blockUVs[2, 3];
+        } else if (bType == BlockData.Type.LOG && side == Cubeside.BOTTOM) {
+            uv00 = blockUVsTop[1, 0];
+            uv10 = blockUVsTop[1, 1];
+            uv01 = blockUVsTop[1, 2];
+            uv11 = blockUVsTop[1, 3];
         } else {
-            uv00 = blockUVs[(int)(bType + 1), 0];
-            uv10 = blockUVs[(int)(bType + 1), 1];
-            uv01 = blockUVs[(int)(bType + 1), 2];
-            uv11 = blockUVs[(int)(bType + 1), 3];
+            uv00 = blockUVs[(int)(bType), 0];
+            uv10 = blockUVs[(int)(bType), 1];
+            uv01 = blockUVs[(int)(bType), 2];
+            uv11 = blockUVs[(int)(bType), 3];
         }
 
         Vector3[] vertices = new Vector3[4];
@@ -166,7 +193,7 @@ public class Block {
     }
 
     public void Draw() {
-        if (bType == BlockType.AIR)
+        if (bType == BlockData.Type.AIR)
             return;
 
         if (!HasSolidNeighbour((int)pos.x - 1, (int)pos.y, (int)pos.z))
