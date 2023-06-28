@@ -15,6 +15,8 @@ public class FirstPersonMovement : MonoBehaviour
     /// <summary> Functions to override movement speed. Will use the last added override. </summary>
     public List<System.Func<float>> speedOverrides = new List<System.Func<float>>();
 
+    [SerializeField]
+    private bool autoWalk = false;
 
 
     void Awake()
@@ -25,6 +27,7 @@ public class FirstPersonMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+
         // Update IsRunning from input.
         IsRunning = canRun && Input.GetKey(runningKey);
 
@@ -36,9 +39,25 @@ public class FirstPersonMovement : MonoBehaviour
         }
 
         // Get targetVelocity from input.
-        Vector2 targetVelocity =new Vector2( Input.GetAxis("Horizontal") * targetMovingSpeed, Input.GetAxis("Vertical") * targetMovingSpeed);
+        Vector2 targetVelocity = new Vector2( Input.GetAxis("Horizontal") * targetMovingSpeed, Input.GetAxis("Vertical") * targetMovingSpeed);
+
+        if (autoWalk) {
+            Vector3 movementDirection = transform.forward * targetMovingSpeed;
+            rigidbody.velocity = new Vector3(movementDirection.x, rigidbody.velocity.y, movementDirection.z);
+            return;
+        }
 
         // Apply movement.
         rigidbody.velocity = transform.rotation * new Vector3(targetVelocity.x, rigidbody.velocity.y, targetVelocity.y);
     }
+
+    public void StartWalk() {
+        autoWalk = true;
+    }
+
+    public void StopWalk() {
+        autoWalk = false;
+    }
+
+
 }

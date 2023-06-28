@@ -9,15 +9,17 @@ public class Chunk {
     public enum ChunkStatus { DRAW, DONE };
     public ChunkStatus status;
     public Material material;
+    public PhysicMaterial physicMaterial;
     private Vector3 position;
     public Chunk[] neighbours = new Chunk[6];
     public bool regrow = false;
 
-    public Chunk(Vector3 pos, Material material) {
+    public Chunk(Vector3 pos, Material material, PhysicMaterial physicMaterial) {
         goChunk = new GameObject(World.CreateChunkName(pos));
         goChunk.transform.position = pos;
         this.position = pos;
         this.material = material;
+        this.physicMaterial = physicMaterial;
         BuildChunk();
     }
 
@@ -64,7 +66,7 @@ public class Chunk {
                     if (chunkData[x, y, z] == null) {
                         if (worldY <= hs && worldY > 0) {
                             if (Utils.fBM3D(worldX, worldY, worldZ, 1, 0.5f) < 0.55f)
-                                chunkData[x, y, z] = new Block(Random.Range(0f, 1f) < 0.05f && worldY <= 20 ? BlockData.Type.DIAMOND_ORE : BlockData.Type.STONE, pos, this);
+                                chunkData[x, y, z] = new Block(Random.Range(0f, 1f) < 0.05f && worldY <= 20 ? BlockData.Type.DIAMOND_ORE : (Random.Range(0f, 1f) < 0.2f ? BlockData.Type.STONE : (Random.Range(0f, 1f) < 0.5f ? BlockData.Type.COBBLESTONE : BlockData.Type.STONE_VARIANT_1)), pos, this);
                             else
                                 chunkData[x, y, z] = new Block(BlockData.Type.AIR, pos, this);
                         } else if (worldY == h)
@@ -77,7 +79,8 @@ public class Chunk {
                             chunkData[x, y, z] = new Block(BlockData.Type.AIR, pos, this);
                     }
 
-                    if (worldY == h + 1)
+                    FillNeighbours();
+                    if (worldY == h + 1 && (y - 1 > 0 && chunkData[x, y - 1, z].GetBlockType() == BlockData.Type.GRASS && CheckNeighbourBlocks(1, false, BlockData.Type.GRASS, new Vector3(x, y, z))))
                         if (Random.Range(0f, 1f) < 0.01)
                             new Tree(this, pos);
                 }
@@ -93,6 +96,7 @@ public class Chunk {
                     chunkData[x, y, z].Draw();
         CombineQuads();
         MeshCollider collider = goChunk.AddComponent<MeshCollider>();
+        collider.material = physicMaterial;
         collider.sharedMesh = goChunk.GetComponent<MeshFilter>().mesh;
         status = ChunkStatus.DONE;
     }

@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
-public class Jump : MonoBehaviour
-{
-    Rigidbody rigidbody;
+public class Jump : MonoBehaviour {
+    Rigidbody rb;
     public float jumpStrength = 2;
     public event System.Action Jumped;
 
@@ -10,24 +9,26 @@ public class Jump : MonoBehaviour
     GroundCheck groundCheck;
 
 
-    void Reset()
-    {
+    void Reset() {
         // Try to get groundCheck.
         groundCheck = GetComponentInChildren<GroundCheck>();
     }
 
-    void Awake()
-    {
+    void Awake() {
         // Get rigidbody.
-        rigidbody = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
     }
 
-    void LateUpdate()
-    {
+    void LateUpdate() {
         // Jump when the Jump button is pressed and we are on the ground.
-        if (Input.GetButtonDown("Jump") && (!groundCheck || groundCheck.isGrounded))
-        {
-            rigidbody.AddForce(Vector3.up * 100 * jumpStrength);
+        if (Input.GetButtonDown("Jump")) {
+            CharacterJump();
+        }
+    }
+
+    public void CharacterJump() {
+        if (!groundCheck || groundCheck.isGrounded) {
+            rb.AddForce(Vector3.up * 100 * jumpStrength);
             Jumped?.Invoke();
         }
     }

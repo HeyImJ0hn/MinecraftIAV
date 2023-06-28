@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class Crouch : MonoBehaviour
-{
+public class Crouch : MonoBehaviour {
     public KeyCode key = KeyCode.LeftControl;
 
     [Header("Slow Movement")]
@@ -16,7 +15,7 @@ public class Crouch : MonoBehaviour
     [HideInInspector]
     public float? defaultHeadYLocalPosition;
     public float crouchYHeadPosition = 1;
-    
+
     [Tooltip("Collider to lower when crouched.")]
     public CapsuleCollider colliderToLower;
     [HideInInspector]
@@ -25,114 +24,106 @@ public class Crouch : MonoBehaviour
     public bool IsCrouched { get; private set; }
     public event System.Action CrouchStart, CrouchEnd;
 
+    private bool voiceControl = true;
 
-    void Reset()
-    {
+
+    void Reset() {
         // Try to get components.
         movement = GetComponentInParent<FirstPersonMovement>();
         headToLower = movement.GetComponentInChildren<Camera>().transform;
         colliderToLower = movement.GetComponentInChildren<CapsuleCollider>();
     }
 
-    void LateUpdate()
-    {
-        if (Input.GetKey(key))
-        {
-            // Enforce a low head.
-            if (headToLower)
-            {
-                // If we don't have the defaultHeadYLocalPosition, get it now.
-                if (!defaultHeadYLocalPosition.HasValue)
-                {
-                    defaultHeadYLocalPosition = headToLower.localPosition.y;
-                }
+    void LateUpdate() {
+        if (!voiceControl) {
+            if (Input.GetKey(key))
+                CharacterCrouch(false);
+            else
+                CharacterStand();
+        }
+    }
 
-                // Lower the head.
-                headToLower.localPosition = new Vector3(headToLower.localPosition.x, crouchYHeadPosition, headToLower.localPosition.z);
+    public void CharacterCrouch(bool voiceControl) {
+        this.voiceControl = voiceControl;
+
+        // Enforce a low head.
+        if (headToLower) {
+            // If we don't have the defaultHeadYLocalPosition, get it now.
+            if (!defaultHeadYLocalPosition.HasValue) {
+                defaultHeadYLocalPosition = headToLower.localPosition.y;
             }
 
-            // Enforce a low colliderToLower.
-            if (colliderToLower)
-            {
-                // If we don't have the defaultColliderHeight, get it now.
-                if (!defaultColliderHeight.HasValue)
-                {
-                    defaultColliderHeight = colliderToLower.height;
-                }
+            // Lower the head.
+            headToLower.localPosition = new Vector3(headToLower.localPosition.x, crouchYHeadPosition, headToLower.localPosition.z);
+        }
 
-                // Get lowering amount.
-                float loweringAmount;
-                if(defaultHeadYLocalPosition.HasValue)
-                {
-                    loweringAmount = defaultHeadYLocalPosition.Value - crouchYHeadPosition;
-                }
-                else
-                {
-                    loweringAmount = defaultColliderHeight.Value * .5f;
-                }
+        // Enforce a low colliderToLower.
+        if (colliderToLower) {
+            // If we don't have the defaultColliderHeight, get it now.
+            if (!defaultColliderHeight.HasValue) {
+                defaultColliderHeight = colliderToLower.height;
+            }
 
-                // Lower the colliderToLower.
-                colliderToLower.height = Mathf.Max(defaultColliderHeight.Value - loweringAmount, 0);
+            // Get lowering amount.
+            float loweringAmount;
+            if (defaultHeadYLocalPosition.HasValue) {
+                loweringAmount = defaultHeadYLocalPosition.Value - crouchYHeadPosition;
+            } else {
+                loweringAmount = defaultColliderHeight.Value * .5f;
+            }
+
+            // Lower the colliderToLower.
+            colliderToLower.height = Mathf.Max(defaultColliderHeight.Value - loweringAmount, 0);
+            colliderToLower.center = Vector3.up * colliderToLower.height * .5f;
+        }
+
+        // Set IsCrouched state.
+        if (!IsCrouched) {
+            IsCrouched = true;
+            SetSpeedOverrideActive(true);
+            CrouchStart?.Invoke();
+        }
+    }
+
+    public void CharacterStand() {
+        voiceControl = false;
+
+        if (IsCrouched) {
+            // Rise the head back up.
+            if (headToLower) {
+                headToLower.localPosition = new Vector3(headToLower.localPosition.x, defaultHeadYLocalPosition.Value, headToLower.localPosition.z);
+            }
+
+            // Reset the colliderToLower's height.
+            if (colliderToLower) {
+                colliderToLower.height = defaultColliderHeight.Value;
                 colliderToLower.center = Vector3.up * colliderToLower.height * .5f;
             }
 
-            // Set IsCrouched state.
-            if (!IsCrouched)
-            {
-                IsCrouched = true;
-                SetSpeedOverrideActive(true);
-                CrouchStart?.Invoke();
-            }
-        }
-        else
-        {
-            if (IsCrouched)
-            {
-                // Rise the head back up.
-                if (headToLower)
-                {
-                    headToLower.localPosition = new Vector3(headToLower.localPosition.x, defaultHeadYLocalPosition.Value, headToLower.localPosition.z);
-                }
-
-                // Reset the colliderToLower's height.
-                if (colliderToLower)
-                {
-                    colliderToLower.height = defaultColliderHeight.Value;
-                    colliderToLower.center = Vector3.up * colliderToLower.height * .5f;
-                }
-
-                // Reset IsCrouched.
-                IsCrouched = false;
-                SetSpeedOverrideActive(false);
-                CrouchEnd?.Invoke();
-            }
+            // Reset IsCrouched.
+            IsCrouched = false;
+            SetSpeedOverrideActive(false);
+            CrouchEnd?.Invoke();
         }
     }
 
 
     #region Speed override.
-    void SetSpeedOverrideActive(bool state)
-    {
+    void SetSpeedOverrideActive(bool state) {
         // Stop if there is no movement component.
-        if(!movement)
-        {
+        if (!movement) {
             return;
         }
 
         // Update SpeedOverride.
-        if (state)
-        {
+        if (state) {
             // Try to add the SpeedOverride to the movement component.
-            if (!movement.speedOverrides.Contains(SpeedOverride))
-            {
+            if (!movement.speedOverrides.Contains(SpeedOverride)) {
                 movement.speedOverrides.Add(SpeedOverride);
             }
-        }
-        else
-        {
+        } else {
             // Try to remove the SpeedOverride from the movement component.
-            if (movement.speedOverrides.Contains(SpeedOverride))
-            {
+            if (movement.speedOverrides.Contains(SpeedOverride)) {
                 movement.speedOverrides.Remove(SpeedOverride);
             }
         }

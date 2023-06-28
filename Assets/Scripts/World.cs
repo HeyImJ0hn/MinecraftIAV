@@ -7,6 +7,7 @@ public class World : MonoBehaviour {
 
     public GameObject player;
     public Material material;
+    public PhysicMaterial physicMaterial;
     public static int chunkSize = 16;
     public static int radius = 2;
     public static ConcurrentDictionary<string, Chunk> chunkDict;
@@ -58,7 +59,7 @@ public class World : MonoBehaviour {
         string name = CreateChunkName(chunkPos);
         Chunk c;
         if (!chunkDict.TryGetValue(name, out c)) {
-            c = new Chunk(chunkPos, material);
+            c = new Chunk(chunkPos, material, physicMaterial);
             c.goChunk.transform.parent = transform;
             chunkDict.TryAdd(c.goChunk.name, c);
         }
@@ -152,5 +153,9 @@ public class World : MonoBehaviour {
                 c.Value.regrow = false;
             }
         }
+    }
+
+    public Chunk GetChunk(string chunkName) {
+        return chunkDict[chunkName];
     }
 }

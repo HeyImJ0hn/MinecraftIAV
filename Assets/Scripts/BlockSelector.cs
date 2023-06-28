@@ -27,25 +27,14 @@ public class BlockSelector : MonoBehaviour {
 
     void Update() {
         if (Input.GetKeyDown(KeyCode.E))
-            switchBlock(true);
+            SwitchBlock(true);
         else if (Input.GetKeyDown(KeyCode.Q))
-            switchBlock(false);
+            SwitchBlock(false);
     }
 
 
-    private void switchBlock(bool next) {
-        if (next) {
-            if (index == hotbar.Length - 1)
-                index = 0;
-            else
-                index++;
-        } else {
-            if (index == 0)
-                index = hotbar.Length - 1;
-            else
-                index--;
-        }
-
+    public void SwitchBlock(bool next) {
+        index = (index + (next ? 1 : -1) + hotbar.Length) % hotbar.Length;
         for (int i = 0; i < hotbar.Length; i++)
             goSlots.transform.GetChild(i).GetComponentsInChildren<Image>()[0].color = (i == index ? selectedColor : defaultColor);
     }

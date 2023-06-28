@@ -16,6 +16,7 @@ public class BlockData {
         BEDROCK,
         DIAMOND_ORE,
         LEAVES,
+        STONE_VARIANT_1,
         AIR
     };
 
