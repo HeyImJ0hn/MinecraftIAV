@@ -154,11 +154,8 @@ public class World : MonoBehaviour {
             }
         }
     }
-<<<<<<< Updated upstream
 
     public Chunk GetChunk(string chunkName) {
         return chunkDict[chunkName];
     }
-=======
->>>>>>> Stashed changes
 }

@@ -21,10 +21,7 @@ public class Block {
     static Vector2 DiamondOre_LBC = new Vector2(2f, 12f) / 16;
     static Vector2 Bedrock_LBC = new Vector2(1f, 14f) / 16;
     static Vector2 Leaves_LBC = new Vector2(5f, 12f) / 16;
-<<<<<<< Updated upstream
     static Vector2 StoneVariant1_LBC = new Vector2(0f, 15f) / 16;
-=======
->>>>>>> Stashed changes
 
     Vector2[,] blockUVs = {
         /* GRASS SIDE */ {GrassSide_LBC, GrassSide_LBC + new Vector2(1f, 0f)/16f,
@@ -43,11 +40,8 @@ public class Block {
                         DiamondOre_LBC + new Vector2(0f, 1f)/16, DiamondOre_LBC + new Vector2(1f, 1f)/16},
         /* LEAVES */ {Leaves_LBC, Leaves_LBC + new Vector2(1f, 0f)/16f,
                         Leaves_LBC + new Vector2(0f, 1f)/16, Leaves_LBC + new Vector2(1f, 1f)/16},
-<<<<<<< Updated upstream
         /* STONE VARIANT 1 */ {StoneVariant1_LBC, StoneVariant1_LBC + new Vector2(1f, 0f)/16f,
                         StoneVariant1_LBC + new Vector2(0f, 1f)/16, StoneVariant1_LBC + new Vector2(1f, 1f)/16},
-=======
->>>>>>> Stashed changes
     };
 
     Vector2[,] blockUVsTop = {

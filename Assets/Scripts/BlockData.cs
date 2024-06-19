@@ -16,10 +16,7 @@ public class BlockData {
         BEDROCK,
         DIAMOND_ORE,
         LEAVES,
-<<<<<<< Updated upstream
         STONE_VARIANT_1,
-=======
->>>>>>> Stashed changes
         AIR
     };
 
