@@ -32,6 +32,7 @@ public class BlockInteraction : MonoBehaviour {
                 int blockz = (int)(Mathf.Round(hitBlock.z) - chunkz);
 
                 string[] coords = chunkName.Split(" ");
+<<<<<<< Updated upstream
                 Vector3[] updatedCoords = UpdateCoords(coords, blockx, blocky, blockz);
 
                 chunkName = World.CreateChunkName(updatedCoords[0]);
@@ -181,4 +182,74 @@ public class BlockInteraction : MonoBehaviour {
         }
     }
 
+=======
+                Vector3 chunkCoords = new Vector3(int.Parse(coords[0]), int.Parse(coords[1]), int.Parse(coords[2]));
+                if (blockx == World.chunkSize || blockx == -1) {
+                    chunkCoords = new Vector3(chunkCoords.x + ((blockx == World.chunkSize) ? World.chunkSize : -World.chunkSize), chunkCoords.y, chunkCoords.z);
+                    blockx = (blockx == World.chunkSize) ? 0 : 15;
+                }
+                if (blocky == World.chunkSize || blocky == -1) {
+                    chunkCoords = new Vector3(chunkCoords.x, chunkCoords.y + ((blocky == World.chunkSize) ? World.chunkSize : -World.chunkSize), chunkCoords.z);
+                    blocky = (blocky == World.chunkSize) ? 0 : 15;
+                }
+                if (blockz == World.chunkSize || blockz == -1) {
+                    chunkCoords = new Vector3(chunkCoords.x, chunkCoords.y, chunkCoords.z + ((blockz == World.chunkSize) ? World.chunkSize : -World.chunkSize));
+                    blockz = (blockz == World.chunkSize) ? 0 : 15;
+                }
+                chunkName = World.CreateChunkName(chunkCoords);
+
+                Chunk c;
+                if (World.chunkDict.TryGetValue(chunkName, out c) && c.chunkData[blockx, blocky, blockz].GetBlockType() != BlockData.Type.BEDROCK) {
+                    BlockData.Type type;
+                    if (interactionType == InteractionType.DESTROY) {
+                        switch (c.chunkData[blockx, blocky, blockz].GetBlockType()) {
+                            case BlockData.Type.GRASS:
+                                type = BlockData.Type.DIRT;
+                                break;
+                            case BlockData.Type.STONE:
+                                type = BlockData.Type.COBBLESTONE;
+                                break;
+                            case BlockData.Type.LEAVES:
+                                type = BlockData.Type.AIR;
+                                break;
+                            default:
+                                type = c.chunkData[blockx, blocky, blockz].GetBlockType();
+                                break;
+                        }
+                        blockSelector.AddBlock(type);
+                        c.chunkData[blockx, blocky, blockz].SetType(BlockData.Type.AIR);
+                    } else if (interactionType == InteractionType.BUILD) {
+                        c.chunkData[blockx, blocky, blockz].SetType(blockSelector.GetCurrentBlockType());
+                        blockSelector.RemoveBlock();
+                    }
+                }
+
+                List<string> updates = new();
+                updates.Add(chunkName);
+                if (blockx == 0)
+                    updates.Add(World.CreateChunkName(new Vector3(chunkx - World.chunkSize, chunky, chunkz)));
+                if (blockx == World.chunkSize - 1)
+                    updates.Add(World.CreateChunkName(new Vector3(chunkx + World.chunkSize, chunky, chunkz)));
+                if (blocky == 0)
+                    updates.Add(World.CreateChunkName(new Vector3(chunkx, chunky - World.chunkSize, chunkz)));
+                if (blocky == World.chunkSize - 1)
+                    updates.Add(World.CreateChunkName(new Vector3(chunkx, chunky + World.chunkSize, chunkz)));
+                if (blockz == 0)
+                    updates.Add(World.CreateChunkName(new Vector3(chunkx, chunky, chunkz - World.chunkSize)));
+                if (blockz == World.chunkSize - 1)
+                    updates.Add(World.CreateChunkName(new Vector3(chunkx, chunky, chunkz + World.chunkSize)));
+
+                foreach (string name in updates) {
+                    if (World.chunkDict.TryGetValue(name, out c)) {
+                        DestroyImmediate(c.goChunk.GetComponent<MeshFilter>());
+                        DestroyImmediate(c.goChunk.GetComponent<MeshRenderer>());
+                        DestroyImmediate(c.goChunk.GetComponent<MeshCollider>());
+                        c.DrawChunk();
+                    }
+                }
+
+            }
+        }
+    }
+>>>>>>> Stashed changes
 }

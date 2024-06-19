@@ -9,12 +9,19 @@ public class Chunk {
     public enum ChunkStatus { DRAW, DONE };
     public ChunkStatus status;
     public Material material;
+<<<<<<< Updated upstream
     public PhysicMaterial physicMaterial;
+=======
+>>>>>>> Stashed changes
     private Vector3 position;
     public Chunk[] neighbours = new Chunk[6];
     public bool regrow = false;
 
+<<<<<<< Updated upstream
     public Chunk(Vector3 pos, Material material, PhysicMaterial physicMaterial) {
+=======
+    public Chunk(Vector3 pos, Material material) {
+>>>>>>> Stashed changes
         goChunk = new GameObject(World.CreateChunkName(pos));
         goChunk.transform.position = pos;
         this.position = pos;
@@ -66,7 +73,11 @@ public class Chunk {
                     if (chunkData[x, y, z] == null) {
                         if (worldY <= hs && worldY > 0) {
                             if (Utils.fBM3D(worldX, worldY, worldZ, 1, 0.5f) < 0.55f)
+<<<<<<< Updated upstream
                                 chunkData[x, y, z] = new Block(Random.Range(0f, 1f) < 0.05f && worldY <= 20 ? BlockData.Type.DIAMOND_ORE : (Random.Range(0f, 1f) < 0.2f ? BlockData.Type.STONE : (Random.Range(0f, 1f) < 0.5f ? BlockData.Type.COBBLESTONE : BlockData.Type.STONE_VARIANT_1)), pos, this);
+=======
+                                chunkData[x, y, z] = new Block(Random.Range(0f, 1f) < 0.05f && worldY <= 20 ? BlockData.Type.DIAMOND_ORE : BlockData.Type.STONE, pos, this);
+>>>>>>> Stashed changes
                             else
                                 chunkData[x, y, z] = new Block(BlockData.Type.AIR, pos, this);
                         } else if (worldY == h)
@@ -79,8 +90,12 @@ public class Chunk {
                             chunkData[x, y, z] = new Block(BlockData.Type.AIR, pos, this);
                     }
 
+<<<<<<< Updated upstream
                     FillNeighbours();
                     if (worldY == h + 1 && (y - 1 > 0 && chunkData[x, y - 1, z].GetBlockType() == BlockData.Type.GRASS && CheckNeighbourBlocks(1, false, BlockData.Type.GRASS, new Vector3(x, y, z))))
+=======
+                    if (worldY == h + 1)
+>>>>>>> Stashed changes
                         if (Random.Range(0f, 1f) < 0.01)
                             new Tree(this, pos);
                 }
