@@ -2760,11 +2760,26 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8780575917002974734, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
+      propertyPath: blockSelector
+      value: 
+      objectReference: {fileID: 2020399997}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
+--- !u!114 &1104929362 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8869318634119968938, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
+  m_PrefabInstance: {fileID: 1104929361}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1793602649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ec20421708fe7f41ac494321ded12ef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1116656951
 GameObject:
   m_ObjectHideFlags: 0
@@ -3875,6 +3890,7 @@ MonoBehaviour:
   fpl: {fileID: 956776069}
   bs: {fileID: 2020399997}
   mi: {fileID: 1793602653}
+  sm: {fileID: 1104929362}
   uiText: {fileID: 991637583}
 --- !u!4 &1782790600
 Transform:
@@ -3938,6 +3954,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a0b575c1c9c86ea40a33bc4527423d9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1793602657 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8780575917002974734, guid: 11aaea5348574644a9eb4f4504fcce3f, type: 3}
+  m_PrefabInstance: {fileID: 1104929361}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1793602649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cec55a4e9a8330d4da48ae03c1d1ba9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1933226282
@@ -4211,6 +4238,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cam: {fileID: 956776066}
+  gameModeManager: {fileID: 1793602657}
 --- !u!114 &2020399997
 MonoBehaviour:
   m_ObjectHideFlags: 0

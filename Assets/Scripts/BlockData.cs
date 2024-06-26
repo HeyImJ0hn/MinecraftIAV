@@ -69,6 +69,14 @@ public class BlockData {
                 return Resources.Load("COBBLESTONE", typeof(Sprite)) as Sprite;
             case Type.DIAMOND_ORE:
                 return Resources.Load("DIAMOND_ORE", typeof(Sprite)) as Sprite;
+            case Type.LEAVES:
+                return Resources.Load("LEAVES", typeof(Sprite)) as Sprite;
+            case Type.STONE_VARIANT_1:
+                return Resources.Load("STONE_VARIANT_1", typeof(Sprite)) as Sprite;
+            case Type.BEDROCK:
+                return Resources.Load("BEDROCK", typeof(Sprite)) as Sprite;
+            case Type.STONE:
+                return Resources.Load("STONE", typeof(Sprite)) as Sprite;
             default:
                 return Resources.Load("DIRT", typeof(Sprite)) as Sprite;
         }

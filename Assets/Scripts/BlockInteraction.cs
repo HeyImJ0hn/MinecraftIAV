@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BlockInteraction : MonoBehaviour {
@@ -9,6 +10,7 @@ public class BlockInteraction : MonoBehaviour {
     enum InteractionType { DESTROY, BUILD };
     InteractionType interactionType;
     private BlockSelector blockSelector;
+    public GameModeManager gameModeManager;
 
     void Start() {
         blockSelector = GetComponent<BlockSelector>();
@@ -69,7 +71,8 @@ public class BlockInteraction : MonoBehaviour {
         Chunk c;
         World.chunkDict.TryGetValue(chunkName, out c);
         c.chunkData[blockx, blocky, blockz].SetType(blockSelector.GetCurrentBlockType());
-        blockSelector.RemoveBlock();
+        if (gameModeManager.gameMode == GameModeManager.GameMode.Survival)
+            blockSelector.RemoveBlock();
         UpdateChunk(c.goChunk.name, blockx, blocky, blockz);
     }
 
@@ -123,8 +126,11 @@ public class BlockInteraction : MonoBehaviour {
                 break;
         }
 
-        blockSelector.AddBlock(type);
-        c.chunkData[blockx, blocky, blockz].SetType(BlockData.Type.AIR);
+        if (gameModeManager.gameMode == GameModeManager.GameMode.Survival && type != BlockData.Type.BEDROCK)
+            blockSelector.AddBlock(type);
+
+        if (type != BlockData.Type.BEDROCK || gameModeManager.gameMode == GameModeManager.GameMode.Creative)
+            c.chunkData[blockx, blocky, blockz].SetType(BlockData.Type.AIR);
 
         UpdateChunk(c.goChunk.name, blockx, blocky, blockz);
 
