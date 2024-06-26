@@ -20,6 +20,8 @@ public class SpeechRecognition : MonoBehaviour {
     public Crouch crouch;
     public FirstPersonLook fpl;
     public BlockSelector bs;
+    public MobInteraction mi;
+    public SpawnMob sm;
 
     public TMP_Text uiText;
 
@@ -43,6 +45,9 @@ public class SpeechRecognition : MonoBehaviour {
         actions.Add("previous", () => {
             bs.SwitchBlock(false);
         });
+        actions.Add("hit", mi.DestroyMob);
+        actions.Add("animal", sm.SpawnAnimal);
+        actions.Add("zombie", sm.SpawnZombie);
 
         recognizer = new KeywordRecognizer(actions.Keys.ToArray(), confidence);
         recognizer.OnPhraseRecognized += KeywordRecognizer_OnPhraseRecognized;

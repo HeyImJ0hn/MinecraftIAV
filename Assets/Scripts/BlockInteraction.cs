@@ -48,7 +48,6 @@ public class BlockInteraction : MonoBehaviour {
     }
 
     private Vector3[] UpdateCoords(string[] coords, int blockx, int blocky, int blockz) {
-
         Vector3 chunkCoords = new Vector3(int.Parse(coords[0]), int.Parse(coords[1]), int.Parse(coords[2]));
         if (blockx == World.chunkSize || blockx == -1) {
             chunkCoords = new Vector3(chunkCoords.x + ((blockx == World.chunkSize) ? World.chunkSize : -World.chunkSize), chunkCoords.y, chunkCoords.z);
